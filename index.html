@@ -1,0 +1,153 @@
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="https://files.codepedia.info/files/uploads/iScripts/html2canvas.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.8/angular.min.js"></script>
+<script src="./quotes.js"></script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+<style>
+  @font-face {
+      font-family: 'harry_p';
+      src: url('./HARRYP__.ttf');
+  }
+
+  @font-face {
+      font-family: 'dingbat';
+      src: url('./dingbat.ttf');
+  }
+
+  html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+      margin:0;
+      padding:0;
+      border:0;
+      font-size:32px;
+      font:inherit;
+      font-family: harry_p;
+      vertical-align:baseline
+  } 
+
+  .character {
+      position: absolute;
+      bottom:0px;
+      right:20px;
+      font-family: dingbat;
+      font-size: 100px;
+      text-align: right;
+      color: #333;
+  }
+
+  #html-content-holder {
+    position: absolute;
+    left:calc(50% - 200px);
+    top: 120px;
+    border: 1px solid #999;    
+    width: 420px;
+    height: 630px;
+    padding: 50px;
+    border-radius: 10px;
+    color: #000;
+    background-color: #FFF;
+  }
+
+  .controls {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 20px;
+    vertical-align: top;
+  }
+
+  .quoteContainer {
+    color: #3e4b51; 
+    font-size: 60px; 
+    text-align: center;
+  }
+
+  .quoteContainer.small {
+    font-size: 45px !important; 
+  }
+
+  .quoteContainer.center {
+    margin-top: 100px;
+  }
+
+</style>
+</head>
+<body ng-app="myApp" ng-controller="myCtrl">
+    <div id="html-content-holder">
+        <p class="quoteContainer" ng-class="{'small': quotesArr[index].length > 115, 'center': quotesArr[index].length < 50}">
+            {{ quotesArr[index] }}
+        </p>
+        <h3 class="character"> {{ getRandomCharacter() }} </h3>
+    </div>
+
+    <div class="row controls">
+      <div class="col-lg-offset-4 col-lg-4">
+        <a href="#" class="pull-left" ng-click="prev()"> <span class="glyphicon glyphicon-chevron-left"></span> </a>
+        <div style="text-align: center; display: inline-block;">
+          {{ index + 1 }} of {{ quotesArr.length }} <br>
+          <a id="btn-Convert-Html2Image" href="#">Download</a> 
+        </div>
+        <a href="#" class="pull-right" ng-click="next()"> <span class="glyphicon glyphicon-chevron-right"></span> </a>
+<!--         <input id="btn-Preview-Image" type="button" value="Preview"/>      
+        <h3>Preview :</h3>
+        <div id="previewImage"></div>
+ -->      
+      </div>
+  </div>
+<script>
+  var app = angular.module('myApp', []);
+  app.controller('myCtrl', function($scope) {
+    $scope.index= 0;
+    $scope.quotesArr = quotesArr;
+
+    $scope.next = function() {
+      $scope.index=($scope.index<$scope.quotesArr.length-1)?++$scope.index:$scope.index;
+    }
+
+    $scope.prev = function() {
+      $scope.index=($scope.index>0)?--$scope.index:$scope.index;
+    }
+
+    $scope.getRandomCharacter = function() {
+      var charStr = ['D', 'S', 'a'];
+      return charStr[Math.floor(Math.random()*charStr.length)];
+    }
+  });
+</script>
+
+<script>
+$(document).ready(function(){
+
+  
+var element = $("#html-content-holder"); // global variable
+var getCanvas; // global variable
+
+    var render = function(callback) {
+      html2canvas(element, {
+         onrendered: function (canvas) {
+                $("#previewImage").append(canvas);
+                getCanvas = canvas;
+                callback && callback();
+             }
+         });
+    }
+ 
+    $("#btn-Preview-Image").on('click', function () {
+         render();
+    });
+
+  $("#btn-Convert-Html2Image").on('click', function () {
+    render(function(){
+      var imgageData = getCanvas.toDataURL("image/png");
+      // Now browser starts downloading it instead of just showing it
+      var newData = imgageData.replace(/^data:image\/png/, "data:application/octet-stream");
+      $("#btn-Convert-Html2Image").attr("download", "dumbledore_says.png").attr("href", newData);
+      $("#previewImage").children()[0].remove();
+    });
+  });
+});
+
+</script>
+</body>
+</html>
